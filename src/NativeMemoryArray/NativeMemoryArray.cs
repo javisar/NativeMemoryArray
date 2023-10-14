@@ -71,6 +71,18 @@ namespace Cysharp.Collections
             }
         }
 
+        public NativeMemoryArray(void* ptr, long length, bool addMemoryPressure = false)
+        {
+            this.length = length;
+            this.addMemoryPressure = addMemoryPressure;
+            buffer = (byte*)ptr;
+            if (addMemoryPressure)
+            {
+                var allocSize = length * Unsafe.SizeOf<T>();
+                GC.AddMemoryPressure(allocSize);
+            }
+        }
+
         public ref T this[long index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -278,7 +290,12 @@ namespace Cysharp.Collections
                 }
             }
         }
-
+        /*
+        public nint GetBuffer()
+        {
+            return (nint)buffer;
+        }
+        */
         ~NativeMemoryArray()
         {
             DisposeCore();
